@@ -2,28 +2,36 @@ import { model, Schema, Document } from 'mongoose';
 
 export interface IPost extends Document {
   description: string;
-  userName: string;
+  picUrl?: string;
+  userEmail: string;
   createdAt: string;
-  comments: Array<{ description: string; userName: string; createdAt: string }>;
-  likes: Array<{ userName: string; createdAt: string }>;
+  comments: Array<{
+    description: string;
+    userEmail: string;
+    userName: string;
+    createdAt: string;
+  }>;
+  likes: Array<{ userEmail: string; createdAt: string }>;
   user: Schema.Types.ObjectId;
 }
 
 const postSchema = new Schema({
   description: String,
-  userName: String,
+  picUrl: String,
+  userEmail: String,
   createdAt: String,
   comments: [
     {
       description: String,
+      userEmail: String,
       userName: String,
       createdAt: String,
     },
   ],
   likes: [
     {
-      userName: String,
       createdAt: String,
+      userEmail: String,
     },
   ],
   user: {

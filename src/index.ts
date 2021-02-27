@@ -15,10 +15,10 @@ mongoose
   .connect(process.env.MONGODB!, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
+    useFindAndModify: false,
   })
-  .then(() => {
+  .then(async () => {
     console.log('MongoDB connected');
-    return server.listen({ port }).then((res) => {
-      console.log(`Server running at port ${res.url}`);
-    });
+    const res = await server.listen({ port });
+    console.log(`Server running at port ${res.url}`);
   });

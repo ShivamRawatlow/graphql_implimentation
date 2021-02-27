@@ -1,25 +1,27 @@
 import React from 'react';
-import gql from 'graphql-tag';
-import { useQuery } from '@apollo/client';
+import { gql, useQuery } from '@apollo/client';
 import { Grid, Typography } from '@material-ui/core';
-import Post from '../components/post';
-
+import PostComponent from '../components/post_component';
+import IPost from '../interfaces/post_interface';
 
 const FETCH_POST_QUERY = gql`
   {
     getPosts {
       id
       description
+      picUrl
       createdAt
-      userName
+      userEmail
       likeCount
       likes {
-        userName
+        id
+        userEmail
       }
       commentCount
       comments {
         id
         userName
+        userEmail
         createdAt
         description
       }
@@ -27,26 +29,31 @@ const FETCH_POST_QUERY = gql`
   }
 `;
 
+const FETCH_USER_DATA = gql`
+  query getUser($id: String!) {
+    getUser(id: $id) {
+      userName
+      email
+      picUrl
+    }
+  }
+`;
+
+
 const Home = () => {
   const { loading, data: { getPosts: posts } = {} } = useQuery(
     FETCH_POST_QUERY
   );
 
-
-  console.log('Post data', posts);
-
   return (
-    <Grid container justify='center'>
-      <Grid item>
-        <Typography variant='h3'>Recent Posts</Typography>
-      </Grid>
+    <Grid container direction='column' justify='center' alignItems='center'>
       {loading ? (
         <Typography variant='h5'>Loading posts</Typography>
       ) : (
         posts &&
-        posts.map((post: any) => (
+        posts.map((post: IPost) => (
           <Grid item key={post.id}>
-            <Post post={post} />
+            <PostComponent post={post} />
           </Grid>
         ))
       )}

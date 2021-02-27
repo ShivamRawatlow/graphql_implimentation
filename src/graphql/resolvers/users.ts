@@ -1,30 +1,23 @@
 import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
 import { UserInputError } from 'apollo-server';
-import User, { IUser } from '../../models/User';
+import User from '../../models/User';
 import {
   validateLoginInput,
   validateRegisterInput,
 } from '../../util/validators';
 import { ResolverMap } from '../../types/graphql-utils';
-
-const generateAuthToken = (user: IUser) => {
-  return jwt.sign(
-    {
-      id: user.id,
-      email: user.email,
-      userName: user.userName,
-    },
-    process.env.JWT_SECRET!,
-    { expiresIn: '1h' }
-  );
-};
+import generateAuthToken from '../../util/generate_auth_token';
+import CheckAuth from '../../util/check_auth';
 
 const UserResolver: ResolverMap = {
   Mutation: {
-    async login(parent, { userName, password }) {
-      const { valid, errors } = validateLoginInput(userName, password);
-      const user = await User.findOne({ userName });
+    async login(parent, { email, password }) {
+      const { valid, errors } = validateLoginInput(email, password);
+
+      if (!valid) {
+        throw new UserInputError('Errors', { errors });
+      }
+      const user = await User.findOne({ email });
 
       if (!user) {
         errors.general = 'User not found';
@@ -46,8 +39,8 @@ const UserResolver: ResolverMap = {
     },
 
     async register(
-      parent: any,
-      { registerInput: { userName, email, password, confirmPassword } }: any
+      parent,
+      { registerInput: { userName, email, password, confirmPassword } }
     ) {
       const { valid, errors } = validateRegisterInput(
         userName,
@@ -84,6 +77,61 @@ const UserResolver: ResolverMap = {
         id: res._id,
         token,
       };
+    },
+
+    async updateProfilePic(parent, { picUrl }, context) {
+      const user = CheckAuth(context);
+
+      if (picUrl.trim() === '') {
+        throw new Error('Url is empty');
+      }
+      const updatedUser = await User.findByIdAndUpdate(
+        user.id,
+        { picUrl },
+        { new: true }
+      );
+
+      if (!updatedUser) {
+        throw new UserInputError('User not found');
+      }
+
+      const token = generateAuthToken(updatedUser);
+
+      return {
+        //@ts-ignore
+        ...updatedUser._doc,
+        id: updatedUser.id,
+        token,
+      };
+    },
+  },
+
+  Query: {
+    async getUser(parent, { email }) {
+      try {
+        const user = await User.findOne({ email });
+        if (user) {
+          return user;
+        } else {
+          throw new Error('User not found');
+        }
+      } catch (err) {
+        throw new Error(err);
+      }
+    },
+
+    async getMe(parent, context) {
+      const authUser = CheckAuth(context);
+      try {
+        const user = await User.findById(authUser.id);
+        if (user) {
+          return user;
+        } else {
+          throw new Error('User not found');
+        }
+      } catch (err) {
+        throw new Error(err);
+      }
     },
   },
 };

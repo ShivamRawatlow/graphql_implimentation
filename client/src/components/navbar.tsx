@@ -5,12 +5,12 @@ import {
   IconButton,
   makeStyles,
   Toolbar,
-  Typography,
 } from '@material-ui/core';
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import MenuIcon from '@material-ui/icons/Menu';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import routeNames from '../utils/routeNames';
+import UserContext from '../context/user_context';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -28,9 +28,16 @@ const useStyles = makeStyles((theme) => ({
 const Navbar = () => {
   const classes = useStyles();
   const [value, setValue] = useState(0);
+  const context = useContext(UserContext);
+  const history = useHistory();
 
   const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
     setValue(newValue);
+  };
+
+  const logoutButtonClick = () => {
+    context?.logout();
+    history.push(routeNames.login);
   };
 
   return (
@@ -45,18 +52,37 @@ const Navbar = () => {
           <MenuIcon />
         </IconButton>
         <Box className={classes.title}>
-          <Button component={Link} to={routeNames.home}>
-            <Typography variant='h6' style={{ color: 'white' }}>
-              Home
-            </Typography>
+          <Button
+            component={Link}
+            to={routeNames.home}
+            style={{ color: 'white' }}
+          >
+            {context?.user ? context?.user?.userName : 'Home'}
           </Button>
         </Box>
-        <Button component={Link} to={routeNames.login} color='inherit'>
-          Login
-        </Button>
-        <Button component={Link} to={routeNames.register} color='inherit'>
-          Register
-        </Button>
+
+        {context?.user ? (
+          <>
+            <Button component={Link} to={routeNames.myprofile} color='inherit'>
+              My Profile
+            </Button>
+            <Button component={Link} to={routeNames.createPost} color='inherit'>
+              CreatePost
+            </Button>
+            <Button onClick={logoutButtonClick} color='inherit'>
+              Logout
+            </Button>
+          </>
+        ) : (
+          <>
+            <Button component={Link} to={routeNames.login} color='inherit'>
+              Login
+            </Button>
+            <Button component={Link} to={routeNames.register} color='inherit'>
+              Register
+            </Button>
+          </>
+        )}
       </Toolbar>
     </AppBar>
   );
@@ -64,4 +90,3 @@ const Navbar = () => {
 
 export default Navbar;
 
-/**   */

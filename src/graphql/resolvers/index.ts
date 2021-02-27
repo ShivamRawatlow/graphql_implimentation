@@ -13,6 +13,7 @@ const resolvers = {
   },
   Query: {
     ...PostsResolver.Query,
+    ...UserResolver.Query,
   },
   Mutation: {
     ...UserResolver.Mutation,

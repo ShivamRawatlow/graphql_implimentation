@@ -1,5 +1,4 @@
-import { useMutation } from '@apollo/client';
-import { Link } from '@material-ui/core';
+import { gql, useMutation } from '@apollo/client';
 import {
   Box,
   Button,
@@ -9,8 +8,12 @@ import {
   TextField,
   Typography,
 } from '@material-ui/core';
-import gql from 'graphql-tag';
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
+import { Link, useHistory } from 'react-router-dom';
+import UserContext from '../context/user_context';
+import AlertSeverity from '../utils/alert-severity';
+import routeNames from '../utils/routeNames';
+import useForm from '../utils/useForm';
 
 const REGISTER_USER = gql`
   mutation register(
@@ -38,106 +41,121 @@ const REGISTER_USER = gql`
 
 const Register = () => {
   const [errors, setErrors] = useState<any>({});
-  const [values, setValues] = useState({
+  const context = useContext(UserContext);
+  const history = useHistory();
+  const initialState = {
     userName: '',
     email: '',
     password: '',
     confirmPassword: '',
-  });
+  };
+
+  const { values, onSubmit, onChange } = useForm(
+    registerUserCallback,
+    initialState
+  );
+
   const [addUser, { loading }] = useMutation(REGISTER_USER, {
-    update(proxy, result) {
-      console.log('SignUp result', result);
+    update(_, { data: { register: userData } }) {
+      context?.login(userData);
+      history.push(routeNames.home);
     },
     onError(err) {
-      console.log(
-        'SignUp Error',
-        err.graphQLErrors[0]?.extensions?.exception?.errors
-      );
-      //setErrors(err.graphQLErrors[0].extensions.exception.errors);
+      const errorData = err.graphQLErrors[0]?.extensions?.exception?.errors;
+      console.log('SignUp Error', errorData);
+      let errorMsg = '';
+      for (const oneError in errorData) {
+        errorMsg += errorData[oneError] + '\n';
+      }
+      context?.setAlert({
+        message: errorMsg,
+        severity: AlertSeverity.error,
+      });
+      setErrors(errorData || {});
     },
     variables: values,
   });
 
-  const onChange = (
-    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    setValues({ ...values, [event.target.name]: event.target.value });
-  };
-
-  const onSubmit = async (event: React.FormEvent<EventTarget>) => {
-    event.preventDefault();
+  function registerUserCallback() {
     addUser();
-  };
+  }
 
   return (
-    <>
-      <Grid
-        container
-        alignItems='center'
-        justify='center'
-        style={{ marginTop: '100px' }}
-      >
-        <Card variant='outlined' style={{ width: '400px' }}>
-          <CardContent>
-            <Typography align='center' variant='h2'>
-              GraphQL App
-            </Typography>
-            <form onSubmit={onSubmit}>
-              <Box margin='10px'>
-                <TextField
-                  fullWidth
-                  type='text'
-                  name='userName'
-                  label='userName'
-                  value={values.userName}
-                  variant='outlined'
-                  onChange={onChange}
-                />
-              </Box>
+    <Grid
+      container
+      alignItems='center'
+      justify='center'
+      style={{ marginTop: '100px' }}
+    >
+      <Card variant='outlined' style={{ width: '400px' }}>
+        <CardContent>
+          <Typography align='center' variant='h2'>
+            GraphQL App
+          </Typography>
+          <form onSubmit={onSubmit}>
+            <Box margin='10px'>
+              <TextField
+                fullWidth
+                type='text'
+                name='userName'
+                label='userName'
+                value={values.userName}
+                variant='outlined'
+                onChange={onChange}
+                error={errors.userName ? true : false}
+              />
+            </Box>
 
-              <Box margin='10px'>
-                <TextField
-                  fullWidth
-                  type='text'
-                  name='email'
-                  label='email'
-                  value={values.email}
-                  variant='outlined'
-                  onChange={onChange}
-                />
-              </Box>
-              <Box margin='10px'>
-                <TextField
-                  fullWidth
-                  type='password'
-                  name='password'
-                  label='password'
-                  value={values.password}
-                  variant='outlined'
-                  onChange={onChange}
-                />
-              </Box>
-              <Box margin='10px'>
-                <TextField
-                  fullWidth
-                  type='password'
-                  name='confirmPassword'
-                  label='confirmPassword'
-                  value={values.confirmPassword}
-                  variant='outlined'
-                  onChange={onChange}
-                />
-              </Box>
-              <Box margin='10px' marginTop='20px'>
-                <Button fullWidth variant='outlined' type='submit'>
-                  <Typography>SignUp</Typography>
-                </Button>
-              </Box>
-            </form>
-          </CardContent>
-        </Card>
-      </Grid>
-    </>
+            <Box margin='10px'>
+              <TextField
+                fullWidth
+                type='text'
+                name='email'
+                label='email'
+                value={values.email}
+                variant='outlined'
+                onChange={onChange}
+                error={errors.email ? true : false}
+              />
+            </Box>
+            <Box margin='10px'>
+              <TextField
+                fullWidth
+                type='password'
+                name='password'
+                label='password'
+                value={values.password}
+                variant='outlined'
+                onChange={onChange}
+                error={errors.password ? true : false}
+              />
+            </Box>
+            <Box margin='10px'>
+              <TextField
+                fullWidth
+                type='password'
+                name='confirmPassword'
+                label='confirmPassword'
+                value={values.confirmPassword}
+                variant='outlined'
+                onChange={onChange}
+                error={errors.confirmPassword ? true : false}
+              />
+            </Box>
+            <Box margin='10px' marginTop='20px'>
+              <Button fullWidth variant='outlined' type='submit'>
+                <Typography>SignUp</Typography>
+              </Button>
+            </Box>
+          </form>
+          <Link to={routeNames.login}>
+            <Typography style={{ color: 'black' }} variant='h5' align='center'>
+              Already have an account ?
+            </Typography>
+          </Link>
+        </CardContent>
+      </Card>
+    </Grid>
   );
 };
 

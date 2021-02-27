@@ -1,8 +1,7 @@
-import { AuthenticationError, UserInputError } from 'apollo-server';
+import { AuthenticationError, gql, UserInputError } from 'apollo-server';
 import Post from '../../models/Post';
 import { ResolverMap } from '../../types/graphql-utils';
 import CheckAuth from '../../util/check_auth';
-
 
 
 const PostsResolver: ResolverMap = {
@@ -31,7 +30,7 @@ const PostsResolver: ResolverMap = {
   },
 
   Mutation: {
-    async createPost(parent, { description }, context) {
+    async createPost(parent, { description, picUrl }, context) {
       const user = CheckAuth(context);
 
       if (description.trim() === '') {
@@ -40,8 +39,9 @@ const PostsResolver: ResolverMap = {
 
       const newPost = new Post({
         description,
+        picUrl,
         user: user._id,
-        userName: user.userName,
+        userEmail: user.email,
         createdAt: new Date().toISOString(),
       });
 
@@ -53,7 +53,7 @@ const PostsResolver: ResolverMap = {
       const user = CheckAuth(context);
       try {
         const post = await Post.findById(postId);
-        if (user.userName === post?.userName) {
+        if (user.email === post?.userEmail) {
           await post.delete();
           return 'Post deleted successfully';
         } else {
@@ -65,15 +65,18 @@ const PostsResolver: ResolverMap = {
     },
 
     async likePost(parent, { postId }, context) {
-      const { userName } = CheckAuth(context);
+      const { email } = CheckAuth(context);
       const post = await Post.findById(postId);
       if (post) {
-        if (post.likes.find((like) => like.userName === userName)) {
+        if (post.likes.find((like) => like.userEmail === email)) {
           //Post already liked, unlike it
-          post.likes = post.likes.filter((like) => like.userName !== userName);
+          post.likes = post.likes.filter((like) => like.userEmail !== email);
         } else {
           //Not liked, like post
-          post.likes.push({ userName, createdAt: new Date().toISOString() });
+          post.likes.push({
+            userEmail: email,
+            createdAt: new Date().toISOString(),
+          });
         }
         await post.save();
         return post;
