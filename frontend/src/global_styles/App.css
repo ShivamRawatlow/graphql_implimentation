@@ -1,0 +1,107 @@
+*,
+*::before,
+*::after {
+  font-family: 'Open Sans', sans-serif;
+}
+
+.grid_row_span_2 {
+  grid-row: span 2;
+}
+
+.grid_col_span_2 {
+  grid-column: span 2;
+}
+
+.justify_self_center {
+  -ms-grid-column-align: center;
+      justify-self: center;
+}
+
+.justify_self_start {
+  -ms-grid-column-align: start;
+      justify-self: start;
+}
+
+.align_self_center {
+  -ms-flex-item-align: center;
+      -ms-grid-row-align: center;
+      align-self: center;
+}
+
+.align_self_start {
+  -ms-flex-item-align: start;
+      -ms-grid-row-align: start;
+      align-self: start;
+}
+
+.margin_top_auto {
+  margin-top: auto;
+}
+
+.margin_bottom_auto {
+  margin-bottom: auto;
+}
+
+.margin_left_auto {
+  margin-left: auto;
+}
+
+.margin_right_auto {
+  margin-right: auto;
+}
+
+.display_block {
+  display: block;
+}
+
+.font_weight_bold {
+  font-weight: bold;
+}
+
+.font_weight_light {
+  font-weight: lighter;
+}
+
+.font_size_extra_large {
+  font-size: xx-large;
+}
+
+.font_size_large {
+  font-size: large;
+}
+
+.font_size_small {
+  font-size: small;
+}
+
+.font_size_medium {
+  font-size: medium;
+}
+
+.circular_border {
+  border: 6px solid var(--primary_color);
+}
+
+.card {
+  background: white;
+  padding: 1rem;
+  border-radius: 0.25rem;
+  border: 6px solid var(--primary_color);
+}
+
+.card.card_shadow {
+  border: none;
+  -webkit-box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.2);
+          box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.2);
+}
+
+.card.card_image {
+  overflow: hidden;
+  width: 100%;
+  aspect-ratio: 16/9;
+  -o-object-fit: cover;
+     object-fit: cover;
+  -o-object-position: center;
+     object-position: center;
+}
+/*# sourceMappingURL=App.css.map */

@@ -1,5 +1,4 @@
 import bcrypt from 'bcryptjs';
-import { UserInputError } from 'apollo-server';
 import User from '../../models/User';
 import {
   validateLoginInput,
@@ -8,28 +7,26 @@ import {
 import { ResolverMap } from '../../types/graphql-utils';
 import generateAuthToken from '../../util/generate_auth_token';
 import CheckAuth from '../../util/check_auth';
+import { badUserInputError, errorMessages } from '../../util/errors';
 
 const UserResolver: ResolverMap = {
   Mutation: {
-    async login(parent, { email, password }) {
-      const { valid, errors } = validateLoginInput(email, password);
+    async login(parent, { email, password }, context) {
+      const { valid, error } = validateLoginInput(email, password);
 
       if (!valid) {
-        throw new UserInputError('Errors', { errors });
+        throw badUserInputError(error);
       }
       const user = await User.findOne({ email });
 
       if (!user) {
-        errors.general = 'User not found';
-        throw new UserInputError('User not found', { errors });
+        throw badUserInputError(errorMessages.USER_NOT_FOUND);
       }
       const match = await bcrypt.compare(password, user.password);
       if (!match) {
-        errors.general = 'Wrong credentials';
-        throw new UserInputError('Wrong credentials', { errors });
+        throw badUserInputError(errorMessages.WRONG_CREDENTIALS);
       }
       const token = generateAuthToken(user);
-
       return {
         //@ts-ignore
         ...user._doc,
@@ -40,25 +37,21 @@ const UserResolver: ResolverMap = {
 
     async register(
       parent,
-      { registerInput: { userName, email, password, confirmPassword } }
+      { registerInput: { userName, email, password, confirmPassword }, context }
     ) {
-      const { valid, errors } = validateRegisterInput(
+      const { valid, error } = validateRegisterInput(
         userName,
         email,
         password,
         confirmPassword
       );
       if (!valid) {
-        throw new UserInputError('Errors', { errors });
+        throw badUserInputError(error);
       }
 
       const user = await User.findOne({ email });
       if (user) {
-        throw new UserInputError('Email is taken', {
-          errors: {
-            userName: 'This email is taken',
-          },
-        });
+        throw badUserInputError(errorMessages.EMAIL_TAKEN);
       }
 
       password = await bcrypt.hash(password, 12);
@@ -83,7 +76,7 @@ const UserResolver: ResolverMap = {
       const user = CheckAuth(context);
 
       if (picUrl.trim() === '') {
-        throw new Error('Url is empty');
+        throw badUserInputError(errorMessages.EMPTY_URL);
       }
       const updatedUser = await User.findByIdAndUpdate(
         user.id,
@@ -92,7 +85,7 @@ const UserResolver: ResolverMap = {
       );
 
       if (!updatedUser) {
-        throw new UserInputError('User not found');
+        throw badUserInputError(errorMessages.USER_NOT_FOUND);
       }
 
       const token = generateAuthToken(updatedUser);
@@ -108,29 +101,22 @@ const UserResolver: ResolverMap = {
 
   Query: {
     async getUser(parent, { email }) {
-      try {
-        const user = await User.findOne({ email });
-        if (user) {
-          return user;
-        } else {
-          throw new Error('User not found');
-        }
-      } catch (err) {
-        throw new Error(err);
+      const user = await User.findOne({ email });
+      if (user) {
+        return user;
+      } else {
+        throw badUserInputError(errorMessages.USER_NOT_FOUND);
       }
     },
 
     async getMe(parent, context) {
       const authUser = CheckAuth(context);
-      try {
-        const user = await User.findById(authUser.id);
-        if (user) {
-          return user;
-        } else {
-          throw new Error('User not found');
-        }
-      } catch (err) {
-        throw new Error(err);
+      const user = await User.findById(authUser.id);
+      if (user) {
+        console.log('getMe executed user:', user);
+        return user;
+      } else {
+        throw badUserInputError(errorMessages.USER_NOT_FOUND);
       }
     },
   },

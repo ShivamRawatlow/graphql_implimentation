@@ -1,0 +1,7 @@
+query getUserPosts($email: String!) {
+  getUserPosts(email: $email) {
+    id
+    description
+    picUrl
+  }
+}

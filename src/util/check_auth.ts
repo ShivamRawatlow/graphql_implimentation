@@ -1,6 +1,6 @@
-import { AuthenticationError } from 'apollo-server';
 import jwt, { Secret } from 'jsonwebtoken';
 import { IUser } from '../models/User';
+import { badUserInputError, errorMessages } from './errors';
 
 const CheckAuth = (context: any) => {
   const authHeader = context.req.headers.authorization;
@@ -14,12 +14,12 @@ const CheckAuth = (context: any) => {
         ) as IUser;
         return user;
       } catch (err) {
-        throw new AuthenticationError('Invalid/Expired token');
+        throw badUserInputError(errorMessages.INVALID_TOKEN);
       }
     }
-    throw new Error("Authentication token must be 'Bearer [token]");
+    throw badUserInputError(errorMessages.INVALID_TOKEN);
   }
-  throw new Error('Authorization header must be provided');
+  throw badUserInputError(errorMessages.NO_TOKEN);
 };
 
 export default CheckAuth;

@@ -1,24 +1,26 @@
 require('dotenv').config();
-import { ApolloServer } from 'apollo-server';
 import mongoose from 'mongoose';
-import resolvers from './graphql/resolvers/index';
+import { startStandaloneServer } from '@apollo/server/standalone';
+import { ApolloServer } from '@apollo/server';
 import typeDefs from './graphql/typeDefs';
+import resolvers from './graphql/resolvers/index';
 
 const port = process.env.PORT;
 const server = new ApolloServer({
   typeDefs,
   resolvers,
-  context: ({ req }) => ({ req }),
 });
 
-mongoose
-  .connect(process.env.MONGODB!, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    useFindAndModify: false,
+mongoose.set('strictQuery', true);
+mongoose.connect(process.env.MONGODB!).then(async () => {
+  startStandaloneServer(server, {
+    context: async ({ req, res }) => ({ req, res }),
+    listen: { port: parseInt(port || '3000') },
   })
-  .then(async () => {
-    console.log('MongoDB connected');
-    const res = await server.listen({ port });
-    console.log(`Server running at port ${res.url}`);
-  });
+    .then(({ url }) => {
+      console.log(`Server running at port ${url}`);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+});

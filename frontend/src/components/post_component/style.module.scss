@@ -1,0 +1,53 @@
+@use 'src/global_styles/variables' as variables;
+
+.post_container {
+  width: 50%;
+  margin-block: 2rem;
+  background: var(--primary_light_color);
+}
+
+.post_profile_image {
+  width: 4rem;
+  height: 4rem;
+  border-radius: 2rem;
+}
+
+.post_image {
+  width: 100%;
+}
+
+.post_header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem 1rem;
+}
+
+.post_footer {
+  display: grid;
+  gap: 2rem;
+  padding: 0.5rem 1rem;
+  grid-template-columns: repeat(3, 1fr);
+}
+.post_description {
+  max-width: 100%;
+  word-wrap: break-word;
+}
+
+@media screen and (max-width: variables.$laptop_breakpoint) {
+  .post_container {
+    width: 70%;
+  }
+}
+
+@media screen and (max-width: variables.$tab_breakpoint) {
+  .post_container {
+    width: 75%;
+  }
+}
+
+@media screen and (max-width: variables.$mobile_breakpoint) {
+  .post_container {
+    width: 80%;
+  }
+}

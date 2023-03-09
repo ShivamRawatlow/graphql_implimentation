@@ -1,0 +1,7 @@
+mutation updateProfilePic($picUrl: String!) {
+  updateProfilePic(picUrl: $picUrl) {
+    id
+    picUrl
+    token
+  }
+}

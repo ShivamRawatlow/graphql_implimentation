@@ -1,0 +1,20 @@
+@use 'src/global_styles/variables' as variables;
+
+.container {
+  margin-top: 7rem;
+}
+
+.card_body {
+  display: inline-block;
+  width: 27rem;
+  margin-right: auto;
+  margin-left: auto;
+  padding: 1rem;
+}
+
+.text {
+  color: var(--primary_color);
+}
+
+@media screen and (max-width: variables.$mobile_breakpoint) {
+}

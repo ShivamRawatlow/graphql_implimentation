@@ -1,0 +1,105 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  font-family: 'Open Sans', sans-serif;
+}
+
+.grid_row_span_2 {
+  grid-row: span 2;
+}
+.grid_col_span_2 {
+  grid-column: span 2;
+}
+.grid_col_span_3 {
+  grid-column: span 3;
+}
+
+.justify_self_center {
+  justify-self: center;
+}
+.justify_self_start {
+  justify-self: start;
+}
+.justify_self_end {
+  justify-self: end;
+}
+
+.align_self_center {
+  align-self: center;
+}
+.align_self_start {
+  align-self: start;
+}
+
+.text_align_center {
+  text-align: center;
+}
+
+.margin_top_auto {
+  margin-top: auto;
+}
+.margin_bottom_auto {
+  margin-bottom: auto;
+}
+.margin_left_auto {
+  margin-left: auto;
+}
+.margin_right_auto {
+  margin-right: auto;
+}
+
+.display_block {
+  display: block;
+}
+
+.font_weight_bold {
+  font-weight: bold;
+}
+.font_weight_light {
+  font-weight: lighter;
+}
+
+.font_size_extra_large {
+  font-size: xx-large;
+}
+.font_size_large {
+  font-size: large;
+}
+.font_size_small {
+  font-size: small;
+}
+.font_size_medium {
+  font-size: medium;
+}
+.circular_border {
+  border: 6px solid var(--primary_color);
+}
+
+.card {
+  border-radius: 0.25rem;
+  border: 6px solid var(--primary_color);
+
+  &.card_shadow {
+    border: none;
+    box-shadow: 0 2px 5px 0 rgba($color: black, $alpha: 0.2);
+  }
+}
+.icon_button {
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+  border-radius: 50%;
+  padding: 0.5rem;
+  width: 2rem;
+  height: 2rem;
+  color: rgba(0, 0, 0, 0.54);
+  &:hover {
+    color: rgba(grey, 0.54);
+  }
+}
+
+.link_style {
+  color: black;
+  text-decoration: none;
+}

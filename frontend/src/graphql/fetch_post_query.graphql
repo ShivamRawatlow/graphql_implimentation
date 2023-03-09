@@ -1,0 +1,22 @@
+query getPosts {
+  getPosts {
+    id
+    description
+    picUrl
+    createdAt
+    userEmail
+    likeCount
+    likes {
+      id
+      userEmail
+    }
+    commentCount
+    comments {
+      id
+      userName
+      userEmail
+      createdAt
+      description
+    }
+  }
+}

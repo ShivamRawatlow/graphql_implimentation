@@ -1,10 +1,4 @@
-interface Ierrors {
-  userName?: string;
-  email?: string;
-  password?: string;
-  confirmPassword?: string;
-  general?: string;
-}
+import { errorMessages } from './errors';
 
 const validateRegisterInput = (
   userName: string,
@@ -12,52 +6,74 @@ const validateRegisterInput = (
   password: string,
   confirmPassword: string
 ) => {
-  const errors: Ierrors = {};
   if (userName.trim() === '') {
-    errors.userName = 'UserName must not be empty';
+    return {
+      error: errorMessages.USERNAME_EMPTY,
+      valid: false,
+    };
   }
   if (email.trim() === '') {
-    errors.email = 'Email must not be empty';
+    return {
+      error: errorMessages.EMAIL_EMPTY,
+      valid: false,
+    };
   } else {
     const regex = new RegExp(
       /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
     );
     if (!email.match(regex)) {
-      errors.email = 'Email must be a valid email address';
+      return {
+        error: errorMessages.EMAIL_INVALID,
+        valid: false,
+      };
     }
   }
   if (password === '') {
-    errors.password = 'Password must not be empty';
+    return {
+      error: errorMessages.PASSWORD_EMPTY,
+      valid: false,
+    };
   } else {
     if (password !== confirmPassword) {
-      errors.confirmPassword = 'Password does not match confirm password';
+      return {
+        error: errorMessages.PASSWORD_CONFIRM_PASSWORD_NOT_MATCH,
+        valid: false,
+      };
     }
   }
 
   return {
-    errors,
-    valid: Object.keys(errors).length < 1,
+    error: '',
+    valid: true,
   };
 };
 
 const validateLoginInput = (email: string, password: string) => {
-  const errors: Ierrors = {};
   if (email.trim() === '') {
-    errors.email = 'Email must not be empty';
+    return {
+      error: errorMessages.EMAIL_EMPTY,
+      valid: false,
+    };
   } else {
     const regex = new RegExp(
       /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
     );
     if (!email.match(regex)) {
-      errors.email = 'Email must be a valid email address';
+      return {
+        error: errorMessages.EMAIL_INVALID,
+        valid: false,
+      };
     }
   }
   if (password === '') {
-    errors.password = 'Password must not be empty';
+    return {
+      error: errorMessages.PASSWORD_EMPTY,
+      valid: false,
+    };
   }
   return {
-    errors,
-    valid: Object.keys(errors).length < 1,
+    error: '',
+    valid: true,
   };
 };
 

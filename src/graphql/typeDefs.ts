@@ -1,4 +1,5 @@
-import { gql } from 'apollo-server';
+import gql from 'graphql-tag';
+
 const typeDefs = gql`
   type Post {
     id: ID!
@@ -41,6 +42,7 @@ const typeDefs = gql`
     getPosts: [Post]
     getPost(postId: ID!): Post!
     getUser(email: String): User!
+    getUserPosts(email: String): [Post]
     getMe: User!
   }
   type Mutation {

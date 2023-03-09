@@ -1,8 +1,11 @@
-import { AuthenticationError, gql, UserInputError } from 'apollo-server';
 import Post from '../../models/Post';
 import { ResolverMap } from '../../types/graphql-utils';
 import CheckAuth from '../../util/check_auth';
-
+import {
+  badUserInputError,
+  errorMessages,
+  internalServerError,
+} from '../../util/errors';
 
 const PostsResolver: ResolverMap = {
   Query: {
@@ -11,21 +14,26 @@ const PostsResolver: ResolverMap = {
         const posts = await Post.find().sort({ createdAt: -1 });
         return posts;
       } catch (err) {
-        throw new Error(err);
+        throw internalServerError();
       }
     },
 
     async getPost(parent, { postId }) {
-      try {
-        const post = await Post.findById(postId);
-        if (post) {
-          return post;
-        } else {
-          throw new Error('Post not found');
-        }
-      } catch (err) {
-        throw new Error(err);
+      const post = await Post.findById(postId);
+      if (post) {
+        return post;
+      } else {
+        throw badUserInputError(errorMessages.POST_NOT_FOUND);
       }
+    },
+
+    async getUserPosts(parent, { email }) {
+      const posts = await Post.find().sort({ createdAt: -1 });
+      const userPosts: any = [];
+      posts.forEach((post) => {
+        if (post.userEmail === email) userPosts.push(post);
+      });
+      return userPosts;
     },
   },
 
@@ -34,7 +42,7 @@ const PostsResolver: ResolverMap = {
       const user = CheckAuth(context);
 
       if (description.trim() === '') {
-        throw new Error('Post body must not be empty');
+        throw badUserInputError(errorMessages.POST_BODY_EMPTY);
       }
 
       const newPost = new Post({
@@ -51,16 +59,12 @@ const PostsResolver: ResolverMap = {
 
     async deletePost(parent, { postId }, context) {
       const user = CheckAuth(context);
-      try {
-        const post = await Post.findById(postId);
-        if (user.email === post?.userEmail) {
-          await post.delete();
-          return 'Post deleted successfully';
-        } else {
-          throw new AuthenticationError('Action not allowed');
-        }
-      } catch (err) {
-        throw new Error(err);
+      const post = await Post.findById(postId);
+      if (user.email === post?.userEmail) {
+        await post.delete();
+        return 'Post deleted successfully';
+      } else {
+        throw badUserInputError(errorMessages.ACTION_NOT_ALLOWED);
       }
     },
 
@@ -78,9 +82,9 @@ const PostsResolver: ResolverMap = {
             createdAt: new Date().toISOString(),
           });
         }
-        await post.save();
-        return post;
-      } else throw new UserInputError('Post not found');
+        const savedPost = await post.save();
+        return savedPost;
+      } else throw badUserInputError(errorMessages.USER_NOT_FOUND);
     },
   },
 };

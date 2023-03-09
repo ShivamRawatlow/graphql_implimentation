@@ -1,20 +1,15 @@
-import { AuthenticationError, UserInputError } from 'apollo-server';
 import Post from '../../models/Post';
 import { ResolverMap } from '../../types/graphql-utils';
 import CheckAuth from '../../util/check_auth';
+import { badUserInputError, errorMessages } from '../../util/errors';
 
 const CommentsResolver: ResolverMap = {
   Mutation: {
     async createComment(parent, { postId, description }, context) {
       const { userName, email } = CheckAuth(context);
       if (description.trim() === '') {
-        throw new UserInputError('Empty comment', {
-          errors: {
-            body: 'Comment body must not be empty',
-          },
-        });
+        throw badUserInputError(errorMessages.EMPTY_COMMENT);
       }
-
       const post = await Post.findById(postId);
       if (post) {
         post.comments.unshift({
@@ -23,9 +18,9 @@ const CommentsResolver: ResolverMap = {
           userEmail: email,
           createdAt: new Date().toISOString(),
         });
-        await post.save();
-        return post;
-      } else throw new UserInputError('Post not found');
+        const savedPost = await post.save();
+        return savedPost;
+      } else throw badUserInputError(errorMessages.USER_NOT_FOUND);
     },
 
     async deleteComment(parent, { postId, commentId }, context) {
@@ -37,12 +32,12 @@ const CommentsResolver: ResolverMap = {
         );
         if (post.comments[commentIndex].userEmail === email) {
           post.comments.splice(commentIndex, 1);
-          await post.save();
-          return post;
+          const savedPost = await post.save();
+          return savedPost;
         } else {
-          throw new AuthenticationError('Action not allowed');
+          throw badUserInputError(errorMessages.ACTION_NOT_ALLOWED);
         }
-      } else throw new UserInputError('Post not found');
+      } else throw badUserInputError(errorMessages.POST_NOT_FOUND);
     },
   },
 };
