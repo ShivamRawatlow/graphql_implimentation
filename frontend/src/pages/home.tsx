@@ -1,8 +1,10 @@
 import PostComponent from '../components/post_component/post_component';
 import IPost from '../interfaces/post_interface';
-import { Box, Grid, SxProps, Theme, Typography } from '@mui/material';
+import { Box, SxProps, Theme } from '@mui/material';
 import { useGetPostsQuery } from '../generated/graphql';
 import graphqlRequestClient from '../graphQLRequestClient';
+import LoadingScreen from '../components/loading_screen';
+import ErrorScreen from '../error_screen';
 
 const homPageStyle: SxProps<Theme> = {
   display: 'flex',
@@ -17,20 +19,23 @@ const Home = () => {
 
   if (isError) {
     console.error(error);
-    return <div>Error In Fetching Posts</div>;
+    return <ErrorScreen />;
   }
 
-  if (isLoading) {
-    return <Typography variant='h5'>Loading posts</Typography>;
-  }
+  // if (isLoading) {
+  //   return;
+  // }
 
   return (
-    <Box sx={homPageStyle}>
-      {posts &&
-        posts.map((post) => (
-          <PostComponent key={post?.id} post={post as IPost} />
-        ))}
-    </Box>
+    <>
+      {isLoading && <LoadingScreen />}
+      <Box sx={homPageStyle}>
+        {posts &&
+          posts.map((post) => (
+            <PostComponent key={post?.id} post={post as IPost} />
+          ))}
+      </Box>
+    </>
   );
 };
 

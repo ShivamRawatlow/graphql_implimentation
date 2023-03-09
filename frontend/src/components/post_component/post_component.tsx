@@ -1,4 +1,3 @@
-import { SxProps, Theme, useTheme } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useContext } from 'react';
 import { Link } from 'react-router-dom';

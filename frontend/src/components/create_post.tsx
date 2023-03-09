@@ -1,13 +1,16 @@
 import { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
+  Box,
   Button,
   Card,
   CardContent,
   CardMedia,
   Grid,
   IconButton,
+  SxProps,
   TextField,
+  Theme,
 } from '@mui/material';
 import UserContext from '../context/user_context';
 import uploadPic from '../utils/upload_pic';
@@ -18,6 +21,16 @@ import { useCreatePostMutation } from '../generated/graphql';
 import graphqlRequestClient from '../graphQLRequestClient';
 import { useErrorHandler } from '../utils/use_error_handler';
 import { useAuthentication } from '../utils/use_authentication';
+import { useMutation } from '@tanstack/react-query';
+import LoadingScreen from './loading_screen';
+
+const imageStyle: SxProps<Theme> = {
+  width: '80%',
+  height: '80%',
+  margin: '20px',
+  objectFit: 'cover',
+  objectPosition: 'center',
+};
 
 const CreatePost = () => {
   const [description, setDescription] = useState('Long long time ago.....');
@@ -28,7 +41,20 @@ const CreatePost = () => {
   const [picUrl, setPicUrl] = useState('');
   const context = useContext(UserContext);
   const navigate = useNavigate();
-  const { mutate } = useCreatePostMutation(graphqlRequestClient, {
+  const { mutate: uploadPicMutation, isLoading: uploadLoading } = useMutation(
+    upload,
+    {
+      onError(err) {
+        console.error(err);
+        context?.setAlert({
+          message: 'unable to upload the image',
+          severity: 'error',
+        });
+        handleCloseDropZone();
+      },
+    }
+  );
+  const { mutate, isLoading } = useCreatePostMutation(graphqlRequestClient, {
     onSuccess() {
       context?.setAlert({
         message: 'Post Created',
@@ -50,20 +76,12 @@ const CreatePost = () => {
     );
   };
 
-  const handleOnSave = async (file: File) => {
-    try {
-      const picUrl = await uploadPic(file);
-      setPicUrl(picUrl);
-      setShowImageDiv(true);
-    } catch (error: any) {
-      console.log(error.message);
-      context?.setAlert({
-        message: 'unable to upload the image',
-        severity: 'error',
-      });
-    }
+  async function upload(file: File) {
+    const picUrl = await uploadPic(file);
+    setPicUrl(picUrl);
+    setShowImageDiv(true);
     handleCloseDropZone();
-  };
+  }
 
   const handleCloseDropZone = () => {
     setOpenDropZone(false);
@@ -78,23 +96,25 @@ const CreatePost = () => {
     setPicUrl('');
   };
 
+  const handleOnSave = async (file: File) => {
+    authentication.checkAuthentication(() => uploadPicMutation(file));
+  };
+
   return (
     <>
+      {(isLoading || uploadLoading) && <LoadingScreen />}
       <FileSelector
         openDropzone={openDropzone}
         setOpenDropZone={setOpenDropZone}
         uploadFunction={handleOnSave}
+        isProfile={false}
       />
 
-      <Grid
-        style={{
-          margin: '30px auto',
-          maxWidth: '80%',
-          padding: '20px',
-          textAlign: 'center',
-        }}
-      >
-        <Card variant='outlined'>
+      <Box>
+        <Card
+          variant='outlined'
+          sx={{ maxWidth: '80%', marginLeft: 'auto', marginRight: 'auto' }}
+        >
           <CardContent>
             <TextField
               label='Tell Your Tale'
@@ -107,15 +127,7 @@ const CreatePost = () => {
             />
             {showImageDiv && (
               <Grid container justifyContent='center'>
-                <CardMedia
-                  style={{
-                    width: '80%',
-                    height: '80%',
-                    margin: '20px',
-                  }}
-                  src={picUrl}
-                  component='img'
-                />
+                <CardMedia sx={imageStyle} src={picUrl} component='img' />
               </Grid>
             )}
 
@@ -133,7 +145,7 @@ const CreatePost = () => {
             </Grid>
           </CardContent>
         </Card>
-      </Grid>
+      </Box>
     </>
   );
 };

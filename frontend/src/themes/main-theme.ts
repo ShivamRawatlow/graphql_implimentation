@@ -1,8 +1,8 @@
 import { createTheme } from '@mui/material';
 
-const primaryColor = '#383e56';
+export const primaryColor = '#383e56';
 const primaryLight = '#e5fad8';
-const primaryContrastText = '#c5d7bd';
+export const primaryContrastText = '#c5d7bd';
 
 const secondaryColor = '#fb743e';
 const secondaryLight = '#F5F5F5';

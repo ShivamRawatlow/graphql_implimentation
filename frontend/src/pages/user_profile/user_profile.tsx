@@ -9,6 +9,7 @@ import {
   useWindowDimensions,
 } from '../../utils/use_window_dimensions';
 import UserNameEmail from '../../components/user_name_email';
+import LoadingScreen from '../../components/loading_screen';
 
 const UserProfile = () => {
   const { width } = useWindowDimensions();
@@ -29,7 +30,7 @@ const UserProfile = () => {
   }
 
   if (isLoading) {
-    return <h4>Loading...</h4>;
+    return <LoadingScreen />;
   }
 
   return (

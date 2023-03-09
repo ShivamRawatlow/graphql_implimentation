@@ -20,7 +20,7 @@ export const useErrorHandler = () => {
     }
 
     context?.setAlert({
-      message,
+      message: 'not authorized to perform the action',
       severity: 'error',
     });
   };
