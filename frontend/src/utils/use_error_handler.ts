@@ -16,11 +16,15 @@ export const useErrorHandler = () => {
       message === errorMessages.INVALID_TOKEN ||
       message === errorMessages.NO_TOKEN
     ) {
+      context?.setAlert({
+        message: 'not authorized to perform that action',
+        severity: 'error',
+      });
       navigate(routeNames.login);
     }
 
     context?.setAlert({
-      message: 'not authorized to perform the action',
+      message,
       severity: 'error',
     });
   };

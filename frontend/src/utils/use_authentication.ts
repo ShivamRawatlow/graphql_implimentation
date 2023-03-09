@@ -11,6 +11,10 @@ export const useAuthentication = () => {
 
   const checkAuthentication = (callback: any) => {
     if (!token || !context?.user) {
+      context?.setAlert({
+        message: 'not authorized to perform the action',
+        severity: 'error',
+      });
       navigate(routeNames.login);
       return;
     }
