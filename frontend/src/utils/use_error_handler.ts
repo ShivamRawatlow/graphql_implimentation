@@ -11,7 +11,6 @@ export const useErrorHandler = () => {
 
   const checkError = (err: any) => {
     const message = err?.response?.errors[0]?.message;
-
     if (
       message === errorMessages.INVALID_TOKEN ||
       message === errorMessages.NO_TOKEN
