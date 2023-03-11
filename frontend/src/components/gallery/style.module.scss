@@ -5,10 +5,11 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(15rem, 27rem));
   gap: 2rem;
-  align-items: stretch;
   justify-items: stretch;
   justify-content: center;
   grid-auto-rows: 1fr;
+  padding-left: 1rem;
+  padding-right: 1rem;
 }
 .post_image {
   display: block;
