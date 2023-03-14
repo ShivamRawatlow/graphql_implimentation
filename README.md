@@ -12,4 +12,4 @@ Technical Details:
 7. Typescript
 
 
-link : https://shivamrawat-tell-tale.herokuapp.com
+link : https://tell-tale-v2.netlify.app/
