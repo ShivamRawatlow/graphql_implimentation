@@ -67,7 +67,8 @@ const FileSelector = ({
                 margin: '1rem',
                 width: isProfile ? '10rem' : '25rem',
                 height: isProfile ? '10rem' : 'auto',
-                borderRadius: isProfile ? '5rem' : '0.2rem',
+                borderRadius: isProfile ? '50%' : '5%',
+                maxWidth: '80%',
                 objectFit: 'cover',
                 objectPosition: 'center',
               }}
