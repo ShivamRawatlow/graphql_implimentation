@@ -10,6 +10,7 @@ import {
 } from '../../utils/use_window_dimensions';
 import UserNameEmail from '../../components/user_name_email';
 import LoadingScreen from '../../components/loading_screen';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
 
 const UserProfile = () => {
   const { width } = useWindowDimensions();
@@ -35,10 +36,12 @@ const UserProfile = () => {
 
   return (
     <div className={styles.container}>
-      <img
+      <LazyLoadImage
         className={`${styles.user_profile} justify_self_center circular_border`}
         src={user?.picUrl || ''}
-        alt='User Profile Pic'
+        loading='lazy'
+        effect='blur'
+        alt='profile'
       />
       <div
         className={`${styles.user_details_container}  ${

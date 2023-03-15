@@ -2,6 +2,7 @@ import { useGetUserPostsQuery } from '../../generated/graphql';
 import graphqlRequestClient from '../../graphQLRequestClient';
 import IUser from '../../interfaces/user_interface';
 import styles from './style.module.scss';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
 
 const Gallery = ({ user }: { user: IUser }) => {
   const { data } = useGetUserPostsQuery(graphqlRequestClient, {
@@ -19,10 +20,12 @@ const Gallery = ({ user }: { user: IUser }) => {
             key={post?.id}
           >
             {post?.picUrl ? (
-              <img
+              <LazyLoadImage
                 src={post.picUrl}
                 className={styles.post_image}
-                alt='Post pic URL'
+                loading='lazy'
+                effect='blur'
+                alt='post'
               />
             ) : (
               <span

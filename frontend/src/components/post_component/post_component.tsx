@@ -15,6 +15,9 @@ import { useQueryClient } from '@tanstack/react-query';
 import styles from './style.module.scss';
 import { useErrorHandler } from '../../utils/use_error_handler';
 import { useAuthentication } from '../../utils/use_authentication';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+
+
 
 const PostComponent = ({ post }: { post: IPost }) => {
   const errorHandler = useErrorHandler();
@@ -59,10 +62,12 @@ const PostComponent = ({ post }: { post: IPost }) => {
   return (
     <div className={`card card_shadow ${styles.post_container}`}>
       <div className={`${styles.post_header}`}>
-        <img
+        <LazyLoadImage
           className={`${styles.post_profile_image}`}
+          effect='blur'
           src={user?.picUrl}
-          alt='User Profile Pic'
+          loading='lazy'
+          alt='profile'
         />
         <Link
           className={`link_style font_weight_bold`}
@@ -82,10 +87,12 @@ const PostComponent = ({ post }: { post: IPost }) => {
       </div>
 
       {post.picUrl && (
-        <img
+        <LazyLoadImage
           className={`${styles.post_image}`}
           src={post.picUrl}
-          alt='Post Pic'
+          effect='blur'
+          loading='lazy'
+          alt='post'
         />
       )}
 
