@@ -1,15 +1,10 @@
-// import PostComponent from '../components/post_component/post_component';
 import IPost from '../interfaces/post_interface';
 import { Box, SxProps, Theme } from '@mui/material';
 import { useGetPostsQuery } from '../generated/graphql';
 import graphqlRequestClient from '../graphQLRequestClient';
 import LoadingScreen from '../components/loading_screen';
 import ErrorScreen from '../error_screen';
-import { Suspense, lazy } from 'react';
-
-const PostComponent = lazy(
-  () => import('../components/post_component/post_component')
-);
+import PostComponent from '../components/post_component/post_component';
 
 const homPageStyle: SxProps<Theme> = {
   display: 'flex',
@@ -33,9 +28,7 @@ const Home = () => {
       <Box sx={homPageStyle}>
         {posts &&
           posts.map((post) => (
-            <Suspense fallback={<LoadingScreen />}>
-              <PostComponent key={post?.id} post={post as IPost} />
-            </Suspense>
+            <PostComponent key={post?.id} post={post as IPost} />
           ))}
       </Box>
     </>

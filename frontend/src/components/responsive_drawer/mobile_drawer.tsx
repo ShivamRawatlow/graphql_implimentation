@@ -1,11 +1,11 @@
 import { Drawer } from '@mui/material';
-import DrawerItems from './drawer_items';
 
 interface Props {
   drawerWidth: number;
   container: (() => HTMLElement) | undefined;
   mobileOpen: boolean;
   handleDrawerToggle: () => void;
+  drawerItems: JSX.Element;
 }
 
 const MobileDrawer = ({
@@ -13,6 +13,7 @@ const MobileDrawer = ({
   container,
   mobileOpen,
   handleDrawerToggle,
+  drawerItems,
 }: Props) => {
   return (
     <Drawer
@@ -31,7 +32,7 @@ const MobileDrawer = ({
         },
       }}
     >
-      <DrawerItems />
+      {drawerItems}
     </Drawer>
   );
 };

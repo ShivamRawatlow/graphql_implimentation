@@ -1,11 +1,11 @@
 import { Drawer } from '@mui/material';
-import DrawerItems from './drawer_items';
 
 interface Props {
   drawerWidth: number;
+  drawerItems: JSX.Element;
 }
 
-const DesktopDrawer = ({ drawerWidth }: Props) => {
+const DesktopDrawer = ({ drawerWidth, drawerItems }: Props) => {
   return (
     <Drawer
       variant='permanent'
@@ -18,7 +18,7 @@ const DesktopDrawer = ({ drawerWidth }: Props) => {
       }}
       open
     >
-      <DrawerItems />
+      {drawerItems}
     </Drawer>
   );
 };

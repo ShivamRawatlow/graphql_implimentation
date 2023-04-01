@@ -34,38 +34,67 @@ const homeLinksStyle: SxProps<Theme> = {
   color: 'inherit',
 };
 
-const DrawerItems = () => {
+interface Props {
+  isMobile: boolean;
+  closeDrawer: () => void;
+}
+
+const DrawerItems = ({ isMobile, closeDrawer }: Props) => {
   const context = useContext(UserContext);
   const navigate = useNavigate();
 
+  const closeMobileDrawer = () => {
+    if (isMobile) {
+      closeDrawer();
+    }
+  };
   const logoutButtonClick = () => {
     context?.logout();
     navigate(routeNames.login);
   };
+
   return (
     <>
       <Toolbar />
       <Divider />
       <Toolbar sx={toolBarStyle}>
-        <Grid component={Link} to={routeNames.home} sx={homeLinksStyle}>
+        <Grid
+          onClick={closeMobileDrawer}
+          component={Link}
+          to={routeNames.home}
+          sx={homeLinksStyle}
+        >
           <HomeRounded fontSize='medium' />
           <Grid sx={menuTextStyle}>Home</Grid>
         </Grid>
         {context?.user && (
-          <Grid component={Link} to={routeNames.myprofile} sx={homeLinksStyle}>
+          <Grid
+            onClick={closeMobileDrawer}
+            component={Link}
+            to={routeNames.myprofile}
+            sx={homeLinksStyle}
+          >
             <PersonRounded fontSize='medium' />
             <Grid sx={menuTextStyle}>My Profile</Grid>
           </Grid>
         )}
         {context?.user && (
-          <Grid component={Link} to={routeNames.createPost} sx={homeLinksStyle}>
+          <Grid
+            onClick={closeMobileDrawer}
+            component={Link}
+            to={routeNames.createPost}
+            sx={homeLinksStyle}
+          >
             <BorderColorRounded fontSize='medium' />
             <Grid sx={menuTextStyle}>CreatePost</Grid>
           </Grid>
         )}
         {context?.user && (
           <Grid
-            onClick={logoutButtonClick}
+            onClick={() => {
+              closeMobileDrawer();
+              logoutButtonClick();
+            }}
             sx={{ ...homeLinksStyle, cursor: 'pointer' }}
           >
             <LogoutRounded color='secondary' fontSize='medium' />
@@ -73,13 +102,23 @@ const DrawerItems = () => {
           </Grid>
         )}
         {!context?.user && (
-          <Grid component={Link} sx={homeLinksStyle} to={routeNames.login}>
+          <Grid
+            onClick={closeMobileDrawer}
+            component={Link}
+            sx={homeLinksStyle}
+            to={routeNames.login}
+          >
             <LoginRounded color='secondary' fontSize='medium' />
             <Grid sx={menuTextStyle}>Login</Grid>
           </Grid>
         )}
         {!context?.user && (
-          <Grid component={Link} sx={homeLinksStyle} to={routeNames.register}>
+          <Grid
+            onClick={closeMobileDrawer}
+            component={Link}
+            sx={homeLinksStyle}
+            to={routeNames.register}
+          >
             <HowToRegRounded color='secondary' fontSize='medium' />
             <Grid sx={menuTextStyle}>Register</Grid>
           </Grid>

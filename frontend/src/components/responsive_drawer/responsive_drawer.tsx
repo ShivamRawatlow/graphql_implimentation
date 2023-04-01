@@ -9,6 +9,7 @@ import Routing from '../routing';
 import MobileDrawer from './mobile_drawer';
 import DesktopDrawer from './desktop_drawer';
 import { useState } from 'react';
+import DrawerItems from './drawer_items';
 
 const drawerWidth = 240;
 
@@ -22,7 +23,10 @@ export default function ResponsiveDrawer(props: Props) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const handleDrawerToggle = () => {
-    setMobileOpen(!mobileOpen);
+    setMobileOpen((prevState) => !prevState);
+  };
+  const closeDrawer = () => {
+    setMobileOpen(false);
   };
 
   const container =
@@ -55,8 +59,9 @@ export default function ResponsiveDrawer(props: Props) {
           >
             <Typography
               sx={{ fontWeight: 'bold' }}
-              variant='h4'
+              variant='h3'
               component='div'
+              className='brand-logo'
             >
               Tell Tale
             </Typography>
@@ -76,8 +81,16 @@ export default function ResponsiveDrawer(props: Props) {
           mobileOpen={mobileOpen}
           handleDrawerToggle={handleDrawerToggle}
           drawerWidth={drawerWidth}
+          drawerItems={
+            <DrawerItems isMobile={true} closeDrawer={closeDrawer} />
+          }
         />
-        <DesktopDrawer drawerWidth={drawerWidth} />
+        <DesktopDrawer
+          drawerWidth={drawerWidth}
+          drawerItems={
+            <DrawerItems isMobile={false} closeDrawer={closeDrawer} />
+          }
+        />
       </Box>
       <Box
         sx={{
